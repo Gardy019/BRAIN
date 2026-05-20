@@ -1,0 +1,32 @@
+# Segredos e credenciais — NUNCA versionar
+.env
+*.env
+credentials.json
+token.json
+
+# Arquivos temporários e gerados
+.tmp/
+
+# Configurações locais de ferramentas
+.obsidian/
+.claude/
+
+# Arquivos de build e cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
