@@ -1,84 +1,86 @@
 # Estado Atual — Ponto de Retomada
 
-_Última atualização: 2026-05-20 (sessão MEI + monitoramento email)_
-
-## Sessão 2026-05-20 — Mercado Livre
-
-- CCMEI lido e salvo em `context/pessoal/mei.md` — CNPJ 64.224.046/0001-77 ATIVO
-- Conta Mercado Pago migrada para MEI (aguardando confirmação por email em até 24h)
-- Monitoramento automático ativo: tarefa `monitorar-email-mercadopago-mei` rodando a cada 3h via Claude scheduled tasks
-
-**Próximo passo ML:** aguardar email do Mercado Pago → vincular Mercado Envios Full
+_Última atualização: 2026-05-20 (sessão ebook + git setup)_
 
 ---
 
-## O que foi feito nessa sessão
+## Próximo passo IMEDIATO ao retornar
 
-### CMO Mode — Estratégia Completa ✅
+### 1. Autenticar o GitHub CLI e subir o repositório
+O repo local já está criado e com commits. Falta só o push.
 
-**Pricing decidido:**
-- Lançamento: $2.99 USD (70% royalty, max BSR velocity)
-- Após 20 reviews: $4.99
-- Consolidado 50+ reviews: $6.99
-- KDP Select ativo desde dia 1, Free Promotion na semana 2
+```bash
+# No terminal do Windows (PowerShell ou CMD):
+gh auth login
+# Escolher: GitHub.com → HTTPS → Login with a web browser
+# Copiar o código exibido, colar no browser, autorizar
+```
 
-**Nível de Consciência: Nível 2 — Consciente do Problema**
-- Sabe que precisa de mais proteína
-- Não tem sistema sustentável
-- Hook: "You already know you need more protein. The problem is it gets boring by week two."
+Depois que autenticar, rodar no terminal (ou me avisar que eu faço):
+```bash
+cd "C:\Users\gardi\OneDrive\Documentos\BRAIN"
+gh repo create BRAIN --private --source=. --remote=origin --push
+```
 
-**Título refinado:**
-- Main: "High Protein Cookbook for Beginners" (SEO intocado)
-- Subtítulo: "50 Quick Recipes to Hit 130g Protein Daily — Without Eating Chicken & Eggs Every Single Day"
+---
 
-### Infra de Geração Visual ✅
+## Estado do Projeto Ebook (High Protein Cookbook)
 
-**tools/generate_cover_html.py** — v2, subtítulo CMO integrado, Playfair+DM Sans
-**tools/generate_cover_final.py** — v2 com foto real embutida em base64
-**tools/generate_recipe_page.py** — template de receita, slide escorregadio, 2 colunas
-**tools/generate_book_assets.py** — gerador de imagens:
-  - Provider 1: Pollinations.ai (gratuito, sem API key, funciona agora)
-  - Provider 2: Gemini Image Generation (requer GEMINI_API_KEY no .env)
-  - Auto-integração: gera foto → injeta no cover → gera PDF final
+### Decisões estratégicas confirmadas ✅
+- **Título:** "High Protein Cookbook for Beginners"
+- **Subtítulo:** "50 Quick Recipes to Hit 130g Protein Daily — Without Eating Chicken & Eggs Every Single Day"
+- **Pricing:** $2.99 lançamento → $4.99 (20 reviews) → $6.99 (50+ reviews)
+- **50 receitas prontas** em `.tmp/recipes_high_protein.md` — 66% sem frango/ovo
 
-**Capa final gerada:** `.tmp/cover_html.pdf` — foto overhead bowl quinoa+frango, tipografia editorial, manifesto Honest Kitchen completo
+### Design — Briefing Gemini incorporado ✅
+- Referência salva em `docs/ebooks/design_kdp_cookbook.md`
+- Paleta: Verde Floresta `#1B3B2B` + Off-White `#FAF9F5` + Ouro `#C5A059`
+- Hero image: salmão, carne bovina ou bowl colorido — **NUNCA frango ou ovo na capa**
+- Canva MCP conectado e funcionando — gera designs via prompt
 
-**Template de receita gerado:** `.tmp/recipe_demo.pdf` — Lemon Herb Chicken & Quinoa Bowl, stats bar, grid 2 colunas, PRO TIP block
+### Capa — status atual
+- 4 opções geradas via Canva MCP com briefing completo (salmão, sem frango)
+- **Nenhuma foi escolhida ainda** — usuário precisa escolher uma das 4 opções
+- Candidate IDs disponíveis:
+  - `dg-3778c773-78fe-4c85-a516-e867e7a34fcf`
+  - `dg-69f722c0-f709-4dcd-91fa-2f59b9d394ac`
+  - `dg-e7e9dab9-616e-4132-9b64-5873ef1d2fad`
+  - `dg-eade4920-cd06-4d1d-a63f-ccb6158dfeb2`
 
-## Próximas ações ao retornar
+### Decisão pendente — layout interno
+"Foto grande em página inteira (estilo arte)" vs. "compacto para leitura rápida na cozinha"?
+→ Define o template das páginas de receita
 
-### Ebook (próximo passo imediato)
-1. **Gerar foto alternativa** (opcional): `python tools/generate_book_assets.py --asset cover_alt`
-2. **Montar o ebook completo**: script que itera as 50 receitas do `recipes_high_protein.md` e gera um PDF por receita usando `generate_recipe_page.py`
-3. **Merge dos PDFs**: capa + intro + 50 receitas + índice → PDF final KDP
-4. **Descrição do livro**: usar `skills/marketing-copywriting.md` + hook CMO para escrever a Amazon listing
-5. **Upload KDP**: kdp.amazon.com → manuscrito + capa
+### Próximos passos do ebook (após escolha da capa)
+1. Salvar capa escolhida na conta Canva → exportar PDF KDP
+2. Criar template de página de receita no mesmo estilo visual
+3. Montar ebook completo (capa + 50 receitas + índice)
+4. Escrever Amazon listing usando `skills/marketing-copywriting.md`
+5. Upload no KDP
 
-### Se quiser chave Gemini (imagens melhores):
-1. Acessar https://aistudio.google.com/app/apikey
-2. Adicionar `GEMINI_API_KEY=sua_chave` no `.env`
-3. Rodar: `python tools/generate_book_assets.py --asset cover --provider gemini`
+---
 
-### Mercado Livre
-- Aguardar liberação CNPJ (~3-7 dias a partir de 2026-05-13)
-- Vincular no Mercado Pago → Dados fiscais
-- Solicitar Mercado Envios Full novamente
+## Repositório Git
 
-## Arquivos criados/modificados nessa sessão
-- `tools/generate_cover_html.py` — v2 com copy CMO
-- `tools/generate_cover_final.py` — versão com foto real embutida (auto-gerado)
-- `tools/generate_recipe_page.py` — template de receita modular
-- `tools/generate_book_assets.py` — gerador de imagens multi-provider
-- `.tmp/cover_html.pdf` — capa final com foto IA + tipografia editorial
-- `.tmp/cover.jpg` — foto gerada via Pollinations.ai (proprietária)
-- `.tmp/recipe_demo.pdf` — preview do template de receita
+- **Local:** `C:\Users\gardi\OneDrive\Documentos\BRAIN`
+- **Branch:** master
+- **Commits:** 3 commits (initial + submodule patches)
+- **Remote:** ainda não criado — aguardando `gh auth login`
+- **gh CLI:** instalado em `C:\Program Files\GitHub CLI\gh.exe`
+
+---
+
+## Mercado Livre
+- CNPJ 64.224.046/0001-77 ATIVO (MEI)
+- Aguardando email do Mercado Pago confirmando migração para MEI
+- Próximo: vincular Mercado Envios Full
+
+---
 
 ## Infraestrutura disponível
-- `tools/ml_search.py` — busca ML via Playwright
-- `tools/kdp_amazon_research.py` — pesquisa Amazon KDP
-- `tools/generate_book_assets.py` — geração de imagens (Pollinations/Gemini)
-- `tools/generate_cover_final.py` — capa com foto real
-- `tools/generate_recipe_page.py` — páginas de receita
-- `skills/` — 6 skills carregadas conforme contexto
-- `.env` — credenciais ML API
-- `pymupdf`, `playwright`, `python-pptx`, `reportlab` — todos instalados
+- `tools/` — scripts Python para KDP, ML e geração de assets
+- `skills/` — 6 skills de comportamento
+- `docs/ebooks/design_kdp_cookbook.md` — briefing de design KDP completo
+- `.tmp/recipes_high_protein.md` — 50 receitas prontas
+- Canva MCP — conectado e funcionando
+- `pymupdf`, `playwright`, `python-pptx`, `reportlab` — instalados
