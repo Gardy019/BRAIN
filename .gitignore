@@ -4,6 +4,14 @@
 credentials.json
 token.json
 
+# Contexto sensível — dados pessoais e financeiros
+context/pessoal/
+context/mercado_livre/financeiro.md
+context/mercado_livre/estoque.md
+
+# Configuração local de MCPs (paths de máquina local)
+.mcp.json
+
 # Arquivos temporários e gerados
 .tmp/
 
