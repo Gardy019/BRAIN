@@ -1,0 +1,76 @@
+{
+  "name": "High Protein Cookbook",
+  "slug": "high-protein-cookbook",
+  "description": "Cookbook theme for a health-focused audience. Rich forest green anchors authority and nature; off-white gives the page breathing room; gold highlights macros and accents without screaming.",
+
+  "colors": {
+    "primary":             "#1B3B2B",
+    "background":          "#FAF9F5",
+    "accent":              "#C5A059",
+    "text_on_primary":     "#FAF9F5",
+    "text_on_background":  "#1B3B2B",
+    "text_on_accent":      "#1B3B2B",
+    "divider":             "#D4C9B0",
+    "muted":               "#7A8C7E"
+  },
+
+  "typography": {
+    "heading": {
+      "family": "Playfair Display",
+      "fallback": "Georgia, serif",
+      "size_title":  32,
+      "size_h1":     24,
+      "size_h2":     16,
+      "weight":      "Bold"
+    },
+    "body": {
+      "family": "Lato",
+      "fallback": "Helvetica Neue, sans-serif",
+      "size_normal": 11,
+      "size_small":   9,
+      "line_height":  1.6,
+      "weight":      "Regular"
+    },
+    "accent_label": {
+      "family": "Lato",
+      "fallback": "Helvetica Neue, sans-serif",
+      "size":         8,
+      "weight":      "Bold",
+      "case":        "UPPER"
+    }
+  },
+
+  "layout": {
+    "page_width_mm":   152.4,
+    "page_height_mm":  228.6,
+    "margin_top_mm":    19.0,
+    "margin_bottom_mm": 19.0,
+    "margin_inner_mm":  19.0,
+    "margin_outer_mm":  12.7,
+    "gutter_mm":         6.35,
+    "bleed_mm":          3.0
+  },
+
+  "recipe_page": {
+    "header_bg":          "#1B3B2B",
+    "header_text":        "#FAF9F5",
+    "header_height_mm":   22.0,
+    "accent_rule_color":  "#C5A059",
+    "accent_rule_width":  1.5,
+    "macro_badge_bg":     "#C5A059",
+    "macro_badge_text":   "#1B3B2B",
+    "macro_badge_radius": 4,
+    "section_label_color":"#7A8C7E",
+    "ingredient_bullet":  "#C5A059",
+    "step_number_color":  "#1B3B2B",
+    "photo_placeholder_bg":"#D4C9B0"
+  },
+
+  "cover": {
+    "hero_image_rule": "NEVER use chicken or eggs as the hero image — salmon, beef, or a colorful bowl only",
+    "title_color":     "#FAF9F5",
+    "subtitle_color":  "#C5A059",
+    "overlay_color":   "#1B3B2B",
+    "overlay_opacity": 0.55
+  }
+}
