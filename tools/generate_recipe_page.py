@@ -38,7 +38,6 @@ def _google_fonts_url(theme: dict) -> str:
 
 def build_css(theme: dict) -> str:
     c  = theme["colors"]
-    rp = theme["recipe_page"]
     ty = theme["typography"]
     heading_font = f"'{ty['heading']['family']}', {ty['heading']['fallback']}"
     body_font    = f"'{ty['body']['family']}', {ty['body']['fallback']}"
@@ -46,6 +45,7 @@ def build_css(theme: dict) -> str:
     return f"""
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 
+  /* ── Estrutura principal: flex column, chrome decorativo via padding-top ── */
   body {{
     width: 600px;
     height: 900px;
@@ -54,9 +54,12 @@ def build_css(theme: dict) -> str:
     overflow: hidden;
     position: relative;
     color: {c['text_on_background']};
+    display: flex;
+    flex-direction: column;
+    padding: 54px 32px 0;
   }}
 
-  /* Barra de capitulo — topo */
+  /* ── Chrome decorativo (absoluto — não interfere no fluxo) ── */
   .chapter-bar {{
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -68,7 +71,6 @@ def build_css(theme: dict) -> str:
     );
   }}
 
-  /* Numero da receita — canto sup esquerdo */
   .recipe-number {{
     position: absolute;
     top: 20px; left: 32px;
@@ -79,18 +81,16 @@ def build_css(theme: dict) -> str:
     letter-spacing: 1px;
   }}
 
-  /* Logotipo sutil — canto sup direito */
   .brand {{
     position: absolute;
     top: 22px; right: 32px;
     font-family: {body_font};
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 3px;
     color: {c['divider']};
     text-transform: lowercase;
   }}
 
-  /* Linha divisoria horizontal sutil */
   .top-rule {{
     position: absolute;
     top: 44px; left: 32px; right: 32px;
@@ -98,15 +98,14 @@ def build_css(theme: dict) -> str:
     background: {c['divider']};
   }}
 
-  /* HEADER DA RECEITA */
+  /* ── Header da receita (flex child, flui naturalmente) ── */
   .recipe-header {{
-    position: absolute;
-    top: 60px; left: 32px; right: 32px;
+    flex-shrink: 0;
   }}
 
   .category-tag {{
     font-family: {body_font};
-    font-size: 7px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 3px;
     color: {c['primary']};
@@ -121,18 +120,25 @@ def build_css(theme: dict) -> str:
     color: {c['text_on_background']};
     line-height: 1.05;
     letter-spacing: -0.5px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     max-width: 85%;
   }}
 
-  /* Stats bar — 4 metricas em linha */
+  .recipe-blurb {{
+    font-family: {heading_font};
+    font-size: 11px;
+    font-style: italic;
+    color: {c['muted']};
+    margin-bottom: 14px;
+    line-height: 1.4;
+    max-width: 90%;
+  }}
+
   .stats-bar {{
     display: flex;
-    gap: 0;
     border-top: 0.5px solid {c['divider']};
     border-bottom: 0.5px solid {c['divider']};
     padding: 10px 0;
-    margin-bottom: 20px;
   }}
 
   .stat {{
@@ -140,7 +146,7 @@ def build_css(theme: dict) -> str:
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     border-right: 0.5px solid {c['divider']};
   }}
 
@@ -158,19 +164,21 @@ def build_css(theme: dict) -> str:
 
   .stat-label {{
     font-family: {body_font};
-    font-size: 6px;
+    font-size: 9px;
     font-weight: 500;
     letter-spacing: 2px;
     color: {c['muted']};
     text-transform: uppercase;
   }}
 
-  /* CORPO: 2 colunas */
+  /* ── Corpo: preenche o espaço restante, nunca vaza para o footer ── */
   .body-grid {{
-    position: absolute;
-    top: 230px; left: 32px; right: 32px; bottom: 60px;
+    flex: 1;
+    min-height: 0;
     display: flex;
     gap: 24px;
+    margin-top: 16px;
+    overflow: hidden;
   }}
 
   .ingredients-col {{
@@ -178,11 +186,12 @@ def build_css(theme: dict) -> str:
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }}
 
   .col-header {{
     font-family: {body_font};
-    font-size: 7px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 3px;
     color: {c['primary']};
@@ -190,6 +199,7 @@ def build_css(theme: dict) -> str:
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom: 1.5px solid {c['primary']};
+    flex-shrink: 0;
   }}
 
   .ingredients-list {{
@@ -197,11 +207,12 @@ def build_css(theme: dict) -> str:
     display: flex;
     flex-direction: column;
     gap: 7px;
+    overflow: hidden;
   }}
 
   .ingredient {{
     font-family: {body_font};
-    font-size: 8.5px;
+    font-size: 10px;
     font-weight: 300;
     color: {c['text_on_background']};
     line-height: 1.3;
@@ -213,21 +224,24 @@ def build_css(theme: dict) -> str:
   .ing-amount {{
     font-weight: 600;
     color: {c['accent']};
-    min-width: 28px;
-    font-size: 8px;
+    min-width: 32px;
+    font-size: 10px;
+    flex-shrink: 0;
   }}
 
   .steps-col {{
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }}
 
   .steps-list {{
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    overflow: hidden;
   }}
 
   .step {{
@@ -248,26 +262,26 @@ def build_css(theme: dict) -> str:
 
   .step p {{
     font-family: {body_font};
-    font-size: 8.5px;
+    font-size: 10px;
     font-weight: 300;
     color: {c['text_on_background']};
     line-height: 1.55;
   }}
 
-  /* Tip block */
   .tip-block {{
-    margin-top: 14px;
+    margin-top: 12px;
     padding: 10px 12px;
     background: {c['accent']}18;
     border-left: 2px solid {c['accent']};
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex-shrink: 0;
   }}
 
   .tip-label {{
     font-family: {body_font};
-    font-size: 6px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 2.5px;
     color: {c['accent']};
@@ -276,34 +290,34 @@ def build_css(theme: dict) -> str:
 
   .tip-text {{
     font-family: {body_font};
-    font-size: 8px;
+    font-size: 9.5px;
     font-weight: 300;
     color: {c['muted']};
     line-height: 1.5;
     font-style: italic;
   }}
 
-  /* Footer */
+  /* ── Footer: empurrado para baixo via margin-top: auto ── */
   .page-footer {{
-    position: absolute;
-    bottom: 16px; left: 32px; right: 32px;
+    margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-top: 0.5px solid {c['divider']};
-    padding-top: 8px;
+    padding: 8px 0 16px;
+    flex-shrink: 0;
   }}
 
   .footer-title {{
     font-family: {body_font};
-    font-size: 6.5px;
+    font-size: 9px;
     color: {c['muted']};
     letter-spacing: 0.5px;
   }}
 
   .page-num {{
     font-family: {heading_font};
-    font-size: 9px;
+    font-size: 10px;
     font-style: italic;
     color: {c['muted']};
   }}
@@ -330,6 +344,13 @@ def build_html(recipe: dict, theme: dict = None) -> str:
         f'</div>'
     ) if tip else ""
 
+    blurb = recipe.get("blurb", "")
+    blurb_html = f'<p class="recipe-blurb">{blurb}</p>' if blurb else ""
+
+    book_title = theme.get("book_title", theme.get("name", ""))
+    servings_val = str(recipe.get("servings", "2"))
+    serving_label = "Serving" if servings_val == "1" else "Servings"
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -342,7 +363,6 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 <body>
 
 <div class="chapter-bar"></div>
-
 <div class="recipe-number">Recipe {recipe.get('number', '01')}</div>
 <div class="brand">{theme.get('name', '').lower()}</div>
 <div class="top-rule"></div>
@@ -350,7 +370,7 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 <div class="recipe-header">
   <div class="category-tag">{recipe.get('category', 'MAIN COURSE')}</div>
   <h1 class="recipe-title">{recipe.get('name', 'Recipe Name')}</h1>
-
+  {blurb_html}
   <div class="stats-bar">
     <div class="stat">
       <span class="stat-value protein">{recipe.get('protein', '0')}g</span>
@@ -361,8 +381,8 @@ def build_html(recipe: dict, theme: dict = None) -> str:
       <span class="stat-label">Minutes</span>
     </div>
     <div class="stat">
-      <span class="stat-value">{recipe.get('servings', '2')}</span>
-      <span class="stat-label">{'Serving' if str(recipe.get('servings', '2')) == '1' else 'Servings'}</span>
+      <span class="stat-value">{servings_val}</span>
+      <span class="stat-label">{serving_label}</span>
     </div>
     <div class="stat">
       <span class="stat-value">{recipe.get('difficulty', 'Easy')}</span>
@@ -389,7 +409,7 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 </div>
 
 <div class="page-footer">
-  <span class="footer-title">High Protein Cookbook for Beginners</span>
+  <span class="footer-title">{book_title}</span>
   <span class="page-num">{recipe.get('page', '1')}</span>
 </div>
 
@@ -429,6 +449,7 @@ async def generate_pdf(recipe: dict, output_pdf: str, theme: dict = None):
 DEMO_RECIPE = {
     "number": "01",
     "name": "Greek Yogurt Power Bowl",
+    "blurb": "A creamy, protein-packed base that fuels your morning in under five minutes — no cooking required.",
     "category": "BREAKFAST",
     "protein": "28",
     "time": "5",
