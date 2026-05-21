@@ -1,51 +1,59 @@
-﻿"""
+"""
 Template de pagina de receita: High Protein Cookbook for Beginners
 Manifesto visual: Honest Kitchen
 Principio de design: Slide Escorregadio — cada elemento puxa o olho para o proximo
 
 Uso:
-  python generate_recipe_page.py --recipe "Lemon Herb Chicken Bowl" --protein 45 --time 25 --servings 2 --difficulty Easy
+  python tools/generate_recipe_page.py
 
 Ou importar como modulo:
-  from generate_recipe_page import render_recipe
-  render_recipe(recipe_data, output_path)
+  from tools.generate_recipe_page import render_recipe, generate_pdf
 """
 import asyncio
-import argparse
-from playwright.async_api import async_playwright
+import sys
 from pathlib import Path
 
-OUT_DIR = Path(r"C:\Users\gardi\OneDrive\Documentos\BRAIN\.tmp")
+ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
+from tools.theme_engine import load_theme
+
+OUT_DIR = ROOT / ".tmp"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-def build_html(recipe: dict) -> str:
-    ingredients_html = "".join(
-        f'<li class="ingredient"><span class="ing-amount">{i["amount"]}</span>{i["name"]}</li>'
-        for i in recipe.get("ingredients", [])
-    )
-    steps_html = "".join(
-        f'<li class="step"><span class="step-num">{idx+1:02d}</span><p>{step}</p></li>'
-        for idx, step in enumerate(recipe.get("steps", []))
-    )
-    tip = recipe.get("tip", "")
-    tip_html = f'<div class="tip-block"><span class="tip-label">PRO TIP</span><p class="tip-text">{tip}</p></div>' if tip else ""
+THEME = load_theme("high-protein-cookbook")
+_c  = THEME["colors"]
+_rp = THEME["recipe_page"]
+_ty = THEME["typography"]
 
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
+
+def _google_fonts_url(theme: dict) -> str:
+    h = theme["typography"]["heading"]["family"].replace(" ", "+")
+    b = theme["typography"]["body"]["family"].replace(" ", "+")
+    return (
+        f"https://fonts.googleapis.com/css2?"
+        f"family={h}:ital,wght@0,700;1,400&"
+        f"family={b}:wght@300;400;500;600&display=swap"
+    )
+
+
+def build_css(theme: dict) -> str:
+    c  = theme["colors"]
+    rp = theme["recipe_page"]
+    ty = theme["typography"]
+    heading_font = f"'{ty['heading']['family']}', {ty['heading']['fallback']}"
+    body_font    = f"'{ty['body']['family']}', {ty['body']['fallback']}"
+
+    return f"""
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 
   body {{
     width: 600px;
     height: 960px;
-    background: #FAF8F4;
-    font-family: 'DM Sans', sans-serif;
+    background: {c['background']};
+    font-family: {body_font};
     overflow: hidden;
     position: relative;
-    color: #2C2C2C;
+    color: {c['text_on_background']};
   }}
 
   /* Barra de capitulo — topo */
@@ -53,17 +61,21 @@ def build_html(recipe: dict) -> str:
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(to right, #C4622D 0%, #C4622D 30%, #6B8F71 30%, #6B8F71 100%);
+    background: linear-gradient(
+      to right,
+      {c['accent']} 0%, {c['accent']} 30%,
+      {c['primary']} 30%, {c['primary']} 100%
+    );
   }}
 
   /* Numero da receita — canto sup esquerdo */
   .recipe-number {{
     position: absolute;
     top: 20px; left: 32px;
-    font-family: 'Playfair Display', serif;
+    font-family: {heading_font};
     font-size: 11px;
     font-style: italic;
-    color: #C4622D;
+    color: {c['accent']};
     letter-spacing: 1px;
   }}
 
@@ -71,10 +83,10 @@ def build_html(recipe: dict) -> str:
   .brand {{
     position: absolute;
     top: 22px; right: 32px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 6px;
     letter-spacing: 3px;
-    color: #D0C8BE;
+    color: {c['divider']};
     text-transform: lowercase;
   }}
 
@@ -83,30 +95,30 @@ def build_html(recipe: dict) -> str:
     position: absolute;
     top: 44px; left: 32px; right: 32px;
     height: 0.5px;
-    background: #E8E0D5;
+    background: {c['divider']};
   }}
 
-  /* ─── HEADER DA RECEITA ─── */
+  /* HEADER DA RECEITA */
   .recipe-header {{
     position: absolute;
     top: 60px; left: 32px; right: 32px;
   }}
 
   .category-tag {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 7px;
     font-weight: 600;
     letter-spacing: 3px;
-    color: #6B8F71;
+    color: {c['primary']};
     text-transform: uppercase;
     margin-bottom: 8px;
   }}
 
   .recipe-title {{
-    font-family: 'Playfair Display', serif;
+    font-family: {heading_font};
     font-size: 32px;
     font-weight: 700;
-    color: #2C2C2C;
+    color: {c['text_on_background']};
     line-height: 1.05;
     letter-spacing: -0.5px;
     margin-bottom: 16px;
@@ -117,8 +129,8 @@ def build_html(recipe: dict) -> str:
   .stats-bar {{
     display: flex;
     gap: 0;
-    border-top: 0.5px solid #E8E0D5;
-    border-bottom: 0.5px solid #E8E0D5;
+    border-top: 0.5px solid {c['divider']};
+    border-bottom: 0.5px solid {c['divider']};
     padding: 10px 0;
     margin-bottom: 20px;
   }}
@@ -129,31 +141,31 @@ def build_html(recipe: dict) -> str:
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    border-right: 0.5px solid #E8E0D5;
+    border-right: 0.5px solid {c['divider']};
   }}
 
   .stat:last-child {{ border-right: none; }}
 
   .stat-value {{
-    font-family: 'Playfair Display', serif;
+    font-family: {heading_font};
     font-size: 18px;
     font-weight: 700;
-    color: #2C2C2C;
+    color: {c['text_on_background']};
     line-height: 1;
   }}
 
-  .stat-value.protein {{ color: #C4622D; }}
+  .stat-value.protein {{ color: {c['accent']}; }}
 
   .stat-label {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 6px;
     font-weight: 500;
     letter-spacing: 2px;
-    color: #9B9B9B;
+    color: {c['muted']};
     text-transform: uppercase;
   }}
 
-  /* ─── CORPO: 2 colunas ─── */
+  /* CORPO: 2 colunas */
   .body-grid {{
     position: absolute;
     top: 230px; left: 32px; right: 32px; bottom: 60px;
@@ -161,7 +173,6 @@ def build_html(recipe: dict) -> str:
     gap: 24px;
   }}
 
-  /* Coluna esquerda: ingredientes */
   .ingredients-col {{
     width: 38%;
     flex-shrink: 0;
@@ -170,15 +181,15 @@ def build_html(recipe: dict) -> str:
   }}
 
   .col-header {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 7px;
     font-weight: 600;
     letter-spacing: 3px;
-    color: #6B8F71;
+    color: {c['primary']};
     text-transform: uppercase;
     margin-bottom: 10px;
     padding-bottom: 6px;
-    border-bottom: 1.5px solid #6B8F71;
+    border-bottom: 1.5px solid {c['primary']};
   }}
 
   .ingredients-list {{
@@ -189,10 +200,10 @@ def build_html(recipe: dict) -> str:
   }}
 
   .ingredient {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 8.5px;
     font-weight: 300;
-    color: #3C3C3C;
+    color: {c['text_on_background']};
     line-height: 1.3;
     display: flex;
     gap: 6px;
@@ -201,12 +212,11 @@ def build_html(recipe: dict) -> str:
 
   .ing-amount {{
     font-weight: 600;
-    color: #C4622D;
+    color: {c['accent']};
     min-width: 28px;
     font-size: 8px;
   }}
 
-  /* Coluna direita: instrucoes */
   .steps-col {{
     flex: 1;
     display: flex;
@@ -227,20 +237,20 @@ def build_html(recipe: dict) -> str:
   }}
 
   .step-num {{
-    font-family: 'Playfair Display', serif;
+    font-family: {heading_font};
     font-size: 20px;
     font-weight: 700;
-    color: #E8E0D5;
+    color: {c['divider']};
     line-height: 1;
     min-width: 28px;
     flex-shrink: 0;
   }}
 
   .step p {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 8.5px;
     font-weight: 300;
-    color: #3C3C3C;
+    color: {c['text_on_background']};
     line-height: 1.55;
   }}
 
@@ -248,27 +258,27 @@ def build_html(recipe: dict) -> str:
   .tip-block {{
     margin-top: 14px;
     padding: 10px 12px;
-    background: rgba(196, 98, 45, 0.06);
-    border-left: 2px solid #C4622D;
+    background: {c['accent']}18;
+    border-left: 2px solid {c['accent']};
     display: flex;
     flex-direction: column;
     gap: 4px;
   }}
 
   .tip-label {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 6px;
     font-weight: 700;
     letter-spacing: 2.5px;
-    color: #C4622D;
+    color: {c['accent']};
     text-transform: uppercase;
   }}
 
   .tip-text {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 8px;
     font-weight: 300;
-    color: #5A5A5A;
+    color: {c['muted']};
     line-height: 1.5;
     font-style: italic;
   }}
@@ -280,23 +290,53 @@ def build_html(recipe: dict) -> str:
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 0.5px solid #E8E0D5;
+    border-top: 0.5px solid {c['divider']};
     padding-top: 8px;
   }}
 
   .footer-title {{
-    font-family: 'DM Sans', sans-serif;
+    font-family: {body_font};
     font-size: 6.5px;
-    color: #C0B8B0;
+    color: {c['muted']};
     letter-spacing: 0.5px;
   }}
 
   .page-num {{
-    font-family: 'Playfair Display', serif;
+    font-family: {heading_font};
     font-size: 9px;
     font-style: italic;
-    color: #C0B8B0;
+    color: {c['muted']};
   }}
+"""
+
+
+def build_html(recipe: dict, theme: dict = None) -> str:
+    if theme is None:
+        theme = THEME
+
+    ingredients_html = "".join(
+        f'<li class="ingredient"><span class="ing-amount">{i["amount"]}</span>{i["name"]}</li>'
+        for i in recipe.get("ingredients", [])
+    )
+    steps_html = "".join(
+        f'<li class="step"><span class="step-num">{idx+1:02d}</span><p>{step}</p></li>'
+        for idx, step in enumerate(recipe.get("steps", []))
+    )
+    tip = recipe.get("tip", "")
+    tip_html = (
+        f'<div class="tip-block">'
+        f'<span class="tip-label">PRO TIP</span>'
+        f'<p class="tip-text">{tip}</p>'
+        f'</div>'
+    ) if tip else ""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="{_google_fonts_url(theme)}" rel="stylesheet">
+<style>
+{build_css(theme)}
 </style>
 </head>
 <body>
@@ -357,13 +397,15 @@ def build_html(recipe: dict) -> str:
 </html>"""
 
 
-def render_recipe(recipe: dict, output_path: str = None) -> str:
-    """Gera HTML da receita. Retorna o HTML como string."""
-    return build_html(recipe)
+def render_recipe(recipe: dict, theme: dict = None) -> str:
+    """Retorna o HTML da receita como string."""
+    return build_html(recipe, theme)
 
 
-async def generate_pdf(recipe: dict, output_pdf: str):
-    html_content = build_html(recipe)
+async def generate_pdf(recipe: dict, output_pdf: str, theme: dict = None):
+    from playwright.async_api import async_playwright
+
+    html_content = build_html(recipe, theme)
     tmp_html = str(OUT_DIR / "recipe_tmp.html")
     with open(tmp_html, "w", encoding="utf-8") as f:
         f.write(html_content)
@@ -377,43 +419,38 @@ async def generate_pdf(recipe: dict, output_pdf: str):
             path=output_pdf,
             width="600px",
             height="960px",
-            print_background=True
+            print_background=True,
         )
         await browser.close()
-    print(f"Recipe PDF: {output_pdf}")
+    print(f"PDF gerado: {output_pdf}")
 
 
-# ── DEMO: receita de exemplo ──────────────────────────────────────────────────
+# ── Recipe 1 das 50 receitas reais do livro ──────────────────────────────────
 DEMO_RECIPE = {
     "number": "01",
-    "name": "Lemon Herb Chicken & Quinoa Bowl",
-    "category": "LUNCH",
-    "protein": "48",
-    "time": "25",
-    "servings": "2",
+    "name": "Greek Yogurt Power Bowl",
+    "category": "BREAKFAST",
+    "protein": "28",
+    "time": "5",
+    "servings": "1",
     "difficulty": "Easy",
-    "page": "24",
+    "page": "12",
     "ingredients": [
-        {"amount": "2x", "name": "chicken breasts (200g each)"},
-        {"amount": "1 cup", "name": "quinoa, rinsed"},
-        {"amount": "2 tbsp", "name": "olive oil"},
-        {"amount": "1", "name": "lemon, zest and juice"},
-        {"amount": "2 cloves", "name": "garlic, minced"},
-        {"amount": "1 tsp", "name": "dried oregano"},
-        {"amount": "1 tsp", "name": "smoked paprika"},
-        {"amount": "2 cups", "name": "cherry tomatoes, halved"},
-        {"amount": "1 cup", "name": "cucumber, diced"},
-        {"amount": "2 tbsp", "name": "fresh parsley, chopped"},
-        {"amount": "Salt &", "name": "pepper to taste"},
+        {"amount": "1 cup",  "name": "plain Greek yogurt (0% or 2%)"},
+        {"amount": "1 scoop","name": "vanilla protein powder"},
+        {"amount": "1/2 cup","name": "mixed berries (fresh or frozen, thawed)"},
+        {"amount": "2 tbsp", "name": "granola"},
+        {"amount": "1 tbsp", "name": "honey"},
+        {"amount": "1 tbsp", "name": "chia seeds"},
     ],
     "steps": [
-        "Cook quinoa in 2 cups salted water. Bring to boil, reduce heat, cover and simmer 15 minutes. Fluff with fork.",
-        "Mix olive oil, lemon zest, garlic, oregano, and paprika. Season chicken breasts and coat evenly.",
-        "Heat a skillet over medium-high heat. Cook chicken 6–7 min per side until internal temp reaches 165°F (74°C). Rest 5 min, then slice.",
-        "While chicken rests, toss tomatoes and cucumber with lemon juice, salt, and pepper.",
-        "Divide quinoa between bowls. Top with sliced chicken, veggie mix, and fresh parsley. Drizzle with remaining lemon juice.",
+        "Spoon Greek yogurt into a bowl.",
+        "Stir in protein powder until fully combined.",
+        "Top with berries, granola, and chia seeds.",
+        "Drizzle honey over the top.",
+        "Serve immediately.",
     ],
-    "tip": "Meal prep hack: cook double the quinoa on Sunday. It keeps refrigerated for 5 days and cuts your prep time in half all week."
+    "tip": "Prep the night before by mixing yogurt and protein powder — store covered in the fridge. Add toppings in the morning.",
 }
 
 if __name__ == "__main__":
