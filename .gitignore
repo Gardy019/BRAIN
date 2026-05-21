@@ -12,6 +12,9 @@ context/mercado_livre/estoque.md
 # Configuração local de MCPs (paths de máquina local)
 .mcp.json
 
+# MCP local — pode conter chaves ou configs sensíveis
+tools/mcp-mercado-livre/
+
 # Arquivos temporários e gerados
 .tmp/
 
