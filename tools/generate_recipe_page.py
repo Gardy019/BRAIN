@@ -88,7 +88,7 @@ def build_css(theme: dict) -> str:
     font-size: 8px;
     letter-spacing: 3px;
     color: {c['divider']};
-    text-transform: lowercase;
+    text-transform: uppercase;
   }}
 
   .top-rule {{
@@ -164,7 +164,7 @@ def build_css(theme: dict) -> str:
 
   .stat-label {{
     font-family: {body_font};
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: 2px;
     color: {c['muted']};
@@ -290,7 +290,7 @@ def build_css(theme: dict) -> str:
 
   .tip-text {{
     font-family: {body_font};
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: 300;
     color: {c['muted']};
     line-height: 1.5;
