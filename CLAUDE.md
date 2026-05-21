@@ -115,24 +115,42 @@ Skills são instruções de comportamento armazenadas em `skills/`. Elas definem
 - **Deliverables**: Final outputs go to cloud services (Google Sheets, Slides, etc.) where I can access them directly
 - **Intermediates**: Temporary processing files that can be regenerated
 
-**Directory layout:**
+### Regra de Ouro: docs/ vs context/
+
+| Pasta | O que vai aqui | Exemplos |
+|---|---|---|
+| `docs/` | Documentação **imutável de terceiros** — regras de plataforma, specs de API, tabelas de taxas. Nunca atualizado por atividade do projeto. | `docs/integracoes/mercado_livre.md`, `docs/mercado_livre_taxas.md`, `docs/ebooks/design_kdp_cookbook.md` |
+| `context/` | Contexto **dinâmico do negócio** — status, briefings, estoque, financeiro, receitas. Atualizado conforme o projeto evolui. | `context/ebooks/negocio.md`, `context/estado_atual.md` |
+
+**Regra prática:** Se o conteúdo veio de fora (API da plataforma, regra do KDP, formato da Amazon) → `docs/`. Se o conteúdo descreve o estado atual do *seu* negócio → `context/`.
+
+### Directory layout:
 ```
-.tmp/                        # Temporary files (scraped data, intermediate exports). Regenerated as needed.
-tools/                       # Python scripts for deterministic execution
-workflows/                   # Markdown SOPs defining what to do and how
-skills/                      # Agent behavior instructions — load only what the task requires
-.env                         # API keys and environment variables (NEVER store secrets anywhere else)
+.tmp/                        # Arquivos temporários (dados raspados, exports intermediários). Regenerado conforme necessário.
+tools/                       # Scripts Python para execução determinística
+workflows/                   # SOPs em Markdown — o que fazer e como
+skills/                      # Instruções de comportamento do agente — carregar apenas o necessário
+.env                         # Chaves de API e variáveis de ambiente (NUNCA armazenar segredos em outro lugar)
 credentials.json, token.json # Google OAuth (gitignored)
 
-docs/                        # Reference documentation (platform rules, tax rates, formulas, research)
-context/                     # Business context — read this before any task
-├── mercado_livre/           # ML resale operation (products, stock, pricing, financials)
-│   ├── negocio.md           # Business profile, model, goals
-│   ├── estoque.md           # Current inventory and status
-│   └── financeiro.md        # Cash, ML cost structure, margin formula
-├── ebooks/                  # Ebook project (channel, niche, production status, revenue)
-│   └── negocio.md
-└── pessoal/                 # Personal finances (income, expenses, goals)
+canvas-fonts/                # Fontes locais usadas pela skill canvas-design
+themes/                      # Arquivos de tema usados pela skill theme-factory
+theme-showcase.pdf           # Preview visual dos temas disponíveis (gerado pela skill theme-factory)
+
+docs/                        # Documentação imutável de terceiros — regras, specs, APIs, tabelas de referência
+├── integracoes/             # Resumos técnicos de APIs integradas (ML, Amazon, n8n...)
+├── ebooks/                  # Specs de formatação KDP, regras de design de terceiros
+└── mercado_livre_taxas.md   # Tabela de taxas ML (referência estática)
+
+context/                     # Contexto dinâmico do negócio — leia antes de qualquer tarefa
+├── estado_atual.md          # O que está em andamento e os próximos passos
+├── mercado_livre/           # Operação de revenda ML
+│   ├── negocio.md           # Perfil do negócio, modelo, objetivos
+│   ├── estoque.md           # Inventário atual e status (gitignored)
+│   └── financeiro.md        # Caixa, estrutura de custos ML, fórmula de margem (gitignored)
+├── ebooks/                  # Projeto de ebooks (canal, nicho, status de produção, receita)
+│   └── negocio.md           # Briefings de design e receitas ficam aqui também
+└── pessoal/                 # Finanças pessoais (gitignored)
     └── financas.md
 ```
 
