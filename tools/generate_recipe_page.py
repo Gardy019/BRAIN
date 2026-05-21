@@ -48,7 +48,7 @@ def build_css(theme: dict) -> str:
 
   body {{
     width: 600px;
-    height: 960px;
+    height: 900px;
     background: {c['background']};
     font-family: {body_font};
     overflow: hidden;
@@ -344,7 +344,7 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 <div class="chapter-bar"></div>
 
 <div class="recipe-number">Recipe {recipe.get('number', '01')}</div>
-<div class="brand">honest kitchen</div>
+<div class="brand">{theme.get('name', '').lower()}</div>
 <div class="top-rule"></div>
 
 <div class="recipe-header">
@@ -362,7 +362,7 @@ def build_html(recipe: dict, theme: dict = None) -> str:
     </div>
     <div class="stat">
       <span class="stat-value">{recipe.get('servings', '2')}</span>
-      <span class="stat-label">Servings</span>
+      <span class="stat-label">{'Serving' if str(recipe.get('servings', '2')) == '1' else 'Servings'}</span>
     </div>
     <div class="stat">
       <span class="stat-value">{recipe.get('difficulty', 'Easy')}</span>
@@ -418,7 +418,7 @@ async def generate_pdf(recipe: dict, output_pdf: str, theme: dict = None):
         await page.pdf(
             path=output_pdf,
             width="600px",
-            height="960px",
+            height="900px",
             print_background=True,
         )
         await browser.close()
