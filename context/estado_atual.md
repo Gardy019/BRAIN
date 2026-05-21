@@ -33,7 +33,7 @@ gh repo create BRAIN --private --source=. --remote=origin --push
 - **50 receitas prontas** em `.tmp/recipes_high_protein.md` — 66% sem frango/ovo
 
 ### Design — Briefing Gemini incorporado ✅
-- Referência salva em `docs/ebooks/design_kdp_cookbook.md`
+- Referência salva em `context/ebooks/design_kdp_cookbook.md`
 - Paleta: Verde Floresta `#1B3B2B` + Off-White `#FAF9F5` + Ouro `#C5A059`
 - Hero image: salmão, carne bovina ou bowl colorido — **NUNCA frango ou ovo na capa**
 - Canva MCP conectado e funcionando — gera designs via prompt
@@ -80,7 +80,7 @@ gh repo create BRAIN --private --source=. --remote=origin --push
 ## Infraestrutura disponível
 - `tools/` — scripts Python para KDP, ML e geração de assets
 - `skills/` — 6 skills de comportamento
-- `docs/ebooks/design_kdp_cookbook.md` — briefing de design KDP completo
+- `context/ebooks/design_kdp_cookbook.md` — briefing de design KDP completo
 - `.tmp/recipes_high_protein.md` — 50 receitas prontas
 - Canva MCP — conectado e funcionando
 - `pymupdf`, `playwright`, `python-pptx`, `reportlab` — instalados
