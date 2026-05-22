@@ -1,26 +1,25 @@
 # Estado Atual — Ponto de Retomada
 
-_Última atualização: 2026-05-20 (sessão ebook + git setup)_
+_Última atualização: 2026-05-22 (sessão capa + recipe page + estrutura BRAIN)_
 
 ---
 
 ## Próximo passo IMEDIATO ao retornar
 
-### 1. Autenticar o GitHub CLI e subir o repositório
-O repo local já está criado e com commits. Falta só o push.
+### Escolher a capa do ebook
 
-```bash
-# No terminal do Windows (PowerShell ou CMD):
-gh auth login
-# Escolher: GitHub.com → HTTPS → Login with a web browser
-# Copiar o código exibido, colar no browser, autorizar
-```
+4 candidatas foram geradas com o briefing correto (Verde Floresta + salmão + hook completo).
+O usuário não conseguiu visualizar os thumbnails na última sessão.
 
-Depois que autenticar, rodar no terminal (ou me avisar que eu faço):
-```bash
-cd "C:\Users\gardi\OneDrive\Documentos\BRAIN"
-gh repo create BRAIN --private --source=. --remote=origin --push
-```
+**Ao retornar:** pedir ao usuário para abrir as URLs abaixo no browser e escolher uma:
+- [Capa A](https://www.canva.com/d/WV5WtXHRBleHJN1)
+- [Capa B](https://www.canva.com/d/K0ifl-NmPav8N_G)
+- [Capa C](https://www.canva.com/d/iU8ZvuqMjfPQa7N)
+- [Capa D](https://www.canva.com/d/lniIYfguoog67Yo)
+
+**Job ID e Candidate IDs salvos em:** `context/ebooks/prompts_capa.md`
+
+Após a escolha: usar `create-design-from-candidate` com o job_id e candidate_id para converter em design editável no Canva, depois exportar como PDF KDP.
 
 ---
 
@@ -32,41 +31,39 @@ gh repo create BRAIN --private --source=. --remote=origin --push
 - **Pricing:** $2.99 lançamento → $4.99 (20 reviews) → $6.99 (50+ reviews)
 - **50 receitas prontas** em `.tmp/recipes_high_protein.md` — 66% sem frango/ovo
 
-### Design — Briefing Gemini incorporado ✅
-- Referência salva em `context/ebooks/design_kdp_cookbook.md`
+### Design ✅
+- Briefing completo em `context/ebooks/design_kdp_cookbook.md`
 - Paleta: Verde Floresta `#1B3B2B` + Off-White `#FAF9F5` + Ouro `#C5A059`
-- Hero image: salmão, carne bovina ou bowl colorido — **NUNCA frango ou ovo na capa**
-- Canva MCP conectado e funcionando — gera designs via prompt
+- Hero image: salmão — **NUNCA frango ou ovo na capa**
+- Theme engine: `themes/high-protein-cookbook.json`
 
-### Capa — status atual
-- 4 opções geradas via Canva MCP com briefing completo (salmão, sem frango)
-- **Nenhuma foi escolhida ainda** — usuário precisa escolher uma das 4 opções
-- Candidate IDs disponíveis:
-  - `dg-3778c773-78fe-4c85-a516-e867e7a34fcf`
-  - `dg-69f722c0-f709-4dcd-91fa-2f59b9d394ac`
-  - `dg-e7e9dab9-616e-4132-9b64-5873ef1d2fad`
-  - `dg-eade4920-cd06-4d1d-a63f-ccb6158dfeb2`
+### Páginas de receita ✅ PRONTO
+- Script: `tools/generate_recipe_page.py` — funcional, theme-driven, sem hardcode
+- Layout: flexbox (não absolute), KDP 600×900px (proporção 1:1.5)
+- Tipografia: Playfair Display + Lato, fontes ≥ 9px
+- Campo `blurb` opcional por receita
+- Demo testado: Greek Yogurt Power Bowl → `.tmp/recipe_demo.pdf`
+- **Pendente:** batch generator para as 50 receitas (decidir: 50 PDFs separados ou 1 PDF completo)
 
-### Decisão pendente — layout interno
-"Foto grande em página inteira (estilo arte)" vs. "compacto para leitura rápida na cozinha"?
-→ Define o template das páginas de receita
+### Capa — status atual ⏳ AGUARDANDO ESCOLHA
+- 4 candidatas geradas com briefing v2 — ver links acima
+- Prompts e IDs salvos em `context/ebooks/prompts_capa.md`
+- Capas antigas (12 designs sem briefing) ainda no Canva — podem ser ignoradas
 
 ### Próximos passos do ebook (após escolha da capa)
-1. Salvar capa escolhida na conta Canva → exportar PDF KDP
-2. Criar template de página de receita no mesmo estilo visual
-3. Montar ebook completo (capa + 50 receitas + índice)
-4. Escrever Amazon listing usando `skills/marketing-copywriting.md`
-5. Upload no KDP
+1. ✅ ~~Gerar candidatas de capa com briefing correto~~
+2. ⏳ Escolher capa → converter candidate → exportar PDF KDP
+3. Decidir batch: 50 PDFs separados ou 1 PDF completo do livro
+4. Rodar batch generator nas 50 receitas
+5. Montar ebook completo (capa + receitas + índice)
+6. Escrever Amazon listing usando `skills/marketing-copywriting.md`
+7. Upload no KDP
 
 ---
 
-## Repositório Git
-
-- **Local:** `C:\Users\gardi\OneDrive\Documentos\BRAIN`
-- **Branch:** master
-- **Commits:** 3 commits (initial + submodule patches)
-- **Remote:** ainda não criado — aguardando `gh auth login`
-- **gh CLI:** instalado em `C:\Program Files\GitHub CLI\gh.exe`
+## Repositório Git ✅
+- **Remote:** https://github.com/Gardy019/BRAIN (público)
+- **Branch:** master — up to date
 
 ---
 
@@ -78,9 +75,11 @@ gh repo create BRAIN --private --source=. --remote=origin --push
 ---
 
 ## Infraestrutura disponível
-- `tools/` — scripts Python para KDP, ML e geração de assets
-- `skills/` — 6 skills de comportamento
-- `context/ebooks/design_kdp_cookbook.md` — briefing de design KDP completo
+- `tools/generate_recipe_page.py` — gerador de páginas theme-driven ✅
+- `tools/theme_engine.py` — carrega temas JSON ✅
+- `themes/high-protein-cookbook.json` — tema completo do livro ✅
+- `context/ebooks/design_kdp_cookbook.md` — briefing de design ✅
+- `context/ebooks/prompts_capa.md` — prompts e IDs das capas ✅
 - `.tmp/recipes_high_protein.md` — 50 receitas prontas
 - Canva MCP — conectado e funcionando
-- `pymupdf`, `playwright`, `python-pptx`, `reportlab` — instalados
+- `playwright`, `pymupdf`, `python-pptx`, `reportlab` — instalados
