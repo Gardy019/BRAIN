@@ -18,6 +18,17 @@ tools/mcp-mercado-livre/
 # Arquivos temporários e gerados
 .tmp/
 
+# Lixo gerado por SeleniumBase/Playwright/Camoufox
+downloaded_files/
+latest_logs/
+saved_charts/
+saved_cookies/
+visual_baseline/
+
+# Perfil persistente do Chrome KDP (cookies + sessão Amazon)
+.kdp/
+chrome_profile/
+
 # Configurações locais de ferramentas
 .obsidian/
 .claude/

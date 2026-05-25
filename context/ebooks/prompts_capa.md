@@ -35,5 +35,7 @@ _Protocolo: todo prompt é salvo aqui ANTES de executar no Canva._
 | C | `dg-bf274856-0d5e-4f1e-97a6-86cb5d5b3f66` | https://design.canva.ai/pRxZExbxlT4Yopn |
 | D | `dg-d6aeb255-701a-4d85-bd70-8b27b3b13fa3` | https://design.canva.ai/Iz0XONzr7dellat |
 
-**Design escolhido:** _(preencher após escolha)_
-**Canva Design ID:** _(preencher após conversão)_
+**Design escolhido:** Capa A — "Sophisticated Cookbook Cover Design" (veredito Gemini: única com prompt executado com perfeição, hook completo e legível, melhor thumbnail para conversão na Amazon)
+**Canva Design ID:** `DAHKZn4RK_0`
+**Edit URL:** https://www.canva.com/d/E--jkBehmOgkDi1
+**View URL:** https://www.canva.com/d/GDY3Emq1a5NAwQa

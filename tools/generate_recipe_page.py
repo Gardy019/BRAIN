@@ -11,6 +11,7 @@ Ou importar como modulo:
 """
 import asyncio
 import sys
+import html as _html
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -212,20 +213,30 @@ def build_css(theme: dict) -> str:
 
   .ingredient {{
     font-family: {body_font};
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 300;
     color: {c['text_on_background']};
-    line-height: 1.3;
+    line-height: 1.35;
     display: flex;
     gap: 6px;
-    align-items: baseline;
+    align-items: center;
+  }}
+
+  .ingredient::before {{
+    content: '';
+    width: 5px;
+    height: 5px;
+    min-width: 5px;
+    background: {c['accent']};
+    border-radius: 1px;
+    flex-shrink: 0;
   }}
 
   .ing-amount {{
     font-weight: 600;
     color: {c['accent']};
-    min-width: 32px;
-    font-size: 10px;
+    min-width: 36px;
+    font-size: 12px;
     flex-shrink: 0;
   }}
 
@@ -262,20 +273,21 @@ def build_css(theme: dict) -> str:
 
   .step p {{
     font-family: {body_font};
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 300;
     color: {c['text_on_background']};
     line-height: 1.55;
   }}
 
   .tip-block {{
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: {c['accent']}18;
-    border-left: 2px solid {c['accent']};
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: {c['accent']}15;
+    border-left: 3px solid {c['accent']};
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
   }}
 
@@ -290,7 +302,7 @@ def build_css(theme: dict) -> str:
 
   .tip-text {{
     font-family: {body_font};
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 300;
     color: {c['muted']};
     line-height: 1.5;
@@ -324,28 +336,33 @@ def build_css(theme: dict) -> str:
 """
 
 
+def _e(text: str) -> str:
+    """HTML-escape user content to prevent entity/tag injection."""
+    return _html.escape(str(text))
+
+
 def build_html(recipe: dict, theme: dict = None) -> str:
     if theme is None:
         theme = THEME
 
     ingredients_html = "".join(
-        f'<li class="ingredient"><span class="ing-amount">{i["amount"]}</span>{i["name"]}</li>'
+        f'<li class="ingredient"><span class="ing-amount">{_e(i["amount"])}</span>{_e(i["name"])}</li>'
         for i in recipe.get("ingredients", [])
     )
     steps_html = "".join(
-        f'<li class="step"><span class="step-num">{idx+1:02d}</span><p>{step}</p></li>'
+        f'<li class="step"><span class="step-num">{idx+1:02d}</span><p>{_e(step)}</p></li>'
         for idx, step in enumerate(recipe.get("steps", []))
     )
     tip = recipe.get("tip", "")
     tip_html = (
         f'<div class="tip-block">'
         f'<span class="tip-label">PRO TIP</span>'
-        f'<p class="tip-text">{tip}</p>'
+        f'<p class="tip-text">{_e(tip)}</p>'
         f'</div>'
     ) if tip else ""
 
     blurb = recipe.get("blurb", "")
-    blurb_html = f'<p class="recipe-blurb">{blurb}</p>' if blurb else ""
+    blurb_html = f'<p class="recipe-blurb">{_e(blurb)}</p>' if blurb else ""
 
     book_title = theme.get("book_title", theme.get("name", ""))
     servings_val = str(recipe.get("servings", "2"))
@@ -363,29 +380,29 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 <body>
 
 <div class="chapter-bar"></div>
-<div class="recipe-number">Recipe {recipe.get('number', '01')}</div>
-<div class="brand">{theme.get('name', '').lower()}</div>
+<div class="recipe-number">Recipe {_e(recipe.get('number', '01'))}</div>
+<div class="brand">{_e(theme.get('name', '').lower())}</div>
 <div class="top-rule"></div>
 
 <div class="recipe-header">
-  <div class="category-tag">{recipe.get('category', 'MAIN COURSE')}</div>
-  <h1 class="recipe-title">{recipe.get('name', 'Recipe Name')}</h1>
+  <div class="category-tag">{_e(recipe.get('category', 'MAIN COURSE'))}</div>
+  <h1 class="recipe-title">{_e(recipe.get('name', 'Recipe Name'))}</h1>
   {blurb_html}
   <div class="stats-bar">
     <div class="stat">
-      <span class="stat-value protein">{recipe.get('protein', '0')}g</span>
+      <span class="stat-value protein">{_e(recipe.get('protein', '0'))}g</span>
       <span class="stat-label">Protein</span>
     </div>
     <div class="stat">
-      <span class="stat-value">{recipe.get('time', '30')}</span>
+      <span class="stat-value">{_e(recipe.get('time', '30'))}</span>
       <span class="stat-label">Minutes</span>
     </div>
     <div class="stat">
-      <span class="stat-value">{servings_val}</span>
-      <span class="stat-label">{serving_label}</span>
+      <span class="stat-value">{_e(servings_val)}</span>
+      <span class="stat-label">{_e(serving_label)}</span>
     </div>
     <div class="stat">
-      <span class="stat-value">{recipe.get('difficulty', 'Easy')}</span>
+      <span class="stat-value">{_e(recipe.get('difficulty', 'Easy'))}</span>
       <span class="stat-label">Level</span>
     </div>
   </div>
@@ -409,8 +426,8 @@ def build_html(recipe: dict, theme: dict = None) -> str:
 </div>
 
 <div class="page-footer">
-  <span class="footer-title">{book_title}</span>
-  <span class="page-num">{recipe.get('page', '1')}</span>
+  <span class="footer-title">{_e(book_title)}</span>
+  <span class="page-num">{_e(recipe.get('page', '1'))}</span>
 </div>
 
 </body>
